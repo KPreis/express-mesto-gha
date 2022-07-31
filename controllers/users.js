@@ -50,6 +50,12 @@ module.exports.getUserById = (req, res) => {
         res.status(404).send({ message: `${err.message}` });
         return;
       }
+      if (err.name === 'CastError') {
+        res.status(400).send({
+          message: 'Переданы некорректные данные при поиске пользователя по ID',
+        });
+        return;
+      }
       res
         .status(500)
         .send({ message: 'Произошла ошибка при поиске пользователя по ID' });

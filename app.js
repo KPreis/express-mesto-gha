@@ -20,6 +20,8 @@ app.use('/users', require('./routes/users'));
 
 app.use('/cards', require('./routes/cards'));
 
+app.use('/', require('./routes/pageNotFound'));
+
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
