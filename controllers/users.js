@@ -1,4 +1,9 @@
 const User = require('../models/user');
+const {
+  BAD_REQUEST_CODE,
+  PAGE_NOT_FOUND_CODE,
+  COMMON_ERROR_CODE,
+} = require('../consts/error_codes');
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -9,13 +14,13 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({
+        res.status(BAD_REQUEST_CODE).send({
           message: 'Переданы некорректные данные при создании пользователя',
         });
         return;
       }
       res
-        .status(500)
+        .status(COMMON_ERROR_CODE)
         .send({ message: 'Произошла ошибка при создании пользователя' });
     });
 };
@@ -27,7 +32,7 @@ module.exports.getUsers = (req, res) => {
     })
     .catch(() => {
       res
-        .status(500)
+        .status(COMMON_ERROR_CODE)
         .send({ message: 'Произошла ошибка при поиске пользователей' });
     });
 };
@@ -47,17 +52,17 @@ module.exports.getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'UserNotFound') {
-        res.status(404).send({ message: `${err.message}` });
+        res.status(PAGE_NOT_FOUND_CODE).send({ message: `${err.message}` });
         return;
       }
       if (err.name === 'CastError') {
-        res.status(400).send({
+        res.status(BAD_REQUEST_CODE).send({
           message: 'Переданы некорректные данные при поиске пользователя по ID',
         });
         return;
       }
       res
-        .status(500)
+        .status(COMMON_ERROR_CODE)
         .send({ message: 'Произошла ошибка при поиске пользователя по ID' });
     });
 };
@@ -88,19 +93,19 @@ module.exports.updateUserProfile = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'UserNotFound') {
-        res.status(404).send({
+        res.status(PAGE_NOT_FOUND_CODE).send({
           message: `${err.message}`,
         });
         return;
       }
       if (err.name === 'ValidationError') {
-        res.status(400).send({
+        res.status(BAD_REQUEST_CODE).send({
           message: 'Переданы некорректные данные при обновлении профиля',
         });
         return;
       }
       res
-        .status(500)
+        .status(COMMON_ERROR_CODE)
         .send({ message: 'Произошла ошибка при изменении профиля' });
     });
 };
@@ -129,19 +134,19 @@ module.exports.updateUserAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'UserNotFound') {
-        res.status(404).send({
+        res.status(PAGE_NOT_FOUND_CODE).send({
           message: `${err.message}`,
         });
         return;
       }
       if (err.name === 'ValidationError') {
-        res.status(400).send({
+        res.status(BAD_REQUEST_CODE).send({
           message: 'Переданы некорректные данные при обновлении аватара',
         });
         return;
       }
       res
-        .status(500)
+        .status(COMMON_ERROR_CODE)
         .send({ message: 'Произошла ошибка при изменении аватара' });
     });
 };
