@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const { PAGE_NOT_FOUND_CODE } = require('../consts/error_codes');
+const NotFoundError = require('../errors/not-found-error');
 
-router.all('/*', (req, res) => {
-  res.status(PAGE_NOT_FOUND_CODE).send({ message: 'Page Not Found' });
+router.all('/*', (req, res, next) => {
+  next(new NotFoundError(`Пользователь по указанному _id: ${req.user._id} не найден.`));
 });
 
 module.exports = router;
