@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const ForbiddenError = require('../errors/forbidden-error');
+const BadRequestError = require('../errors/bad-request-error');
 
 module.exports.createCard = (req, res, next) => {
   const {
@@ -14,7 +15,12 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => {
       res.send({ data: card });
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорректные данные'));
+      }
+      return next(error);
+    });
 };
 
 module.exports.getCards = (req, res, next) => {
