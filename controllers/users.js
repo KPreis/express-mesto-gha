@@ -25,6 +25,7 @@ module.exports.createUser = (req, res, next) => {
             },
           );
         })
+        // eslint-disable-next-line consistent-return
         .catch((error) => {
           if (error.code === 11000) {
             return next(new ConflictError('Пользователь существует'));
@@ -119,7 +120,7 @@ module.exports.login = (req, res, next) => {
         about: user.about,
         avatar: user.avatar,
         email: user.email,
-      },);
-    },)
+      });
+    })
     .catch(next);
 };
