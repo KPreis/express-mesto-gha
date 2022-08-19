@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
+const ConflictError = require('../errors/conflict-error');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -24,7 +25,12 @@ module.exports.createUser = (req, res, next) => {
             },
           );
         })
-        .catch(next);
+        .catch((error) => {
+          if (error.code === 11000) {
+            return next(new ConflictError('Пользователь существует'));
+          }
+          next(error);
+        });
     });
 };
 
@@ -48,7 +54,7 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById(req.user.userId)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError(`Пользователь по указанному _id: ${req.params.userId} не найден.`);
@@ -98,9 +104,8 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
@@ -108,11 +113,13 @@ module.exports.login = (req, res) => {
         'some-secret-key',
         { expiresIn: '7d' },
       );
-      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).end();
-    })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      },);
+    },)
+    .catch(next);
 };
