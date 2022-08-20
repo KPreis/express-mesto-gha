@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const ConflictError = require('../errors/conflict-error');
+const BadRequestError = require('../errors/bad-request-error');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -25,12 +26,14 @@ module.exports.createUser = (req, res, next) => {
             },
           );
         })
-        // eslint-disable-next-line consistent-return
         .catch((error) => {
           if (error.code === 11000) {
             return next(new ConflictError('Пользователь существует'));
           }
-          next(error);
+          if (error.name === 'ValidationError') {
+            return next(new BadRequestError('Введены некорректные данные'));
+          }
+          return next();
         });
     });
 };
@@ -62,7 +65,12 @@ module.exports.getUserById = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        return next(new BadRequestError('Введены некорректные данные'));
+      }
+      return next();
+    });
 };
 
 module.exports.updateUserProfile = (req, res, next) => {
@@ -82,7 +90,12 @@ module.exports.updateUserProfile = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорректные данные'));
+      }
+      return next();
+    });
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
@@ -102,7 +115,12 @@ module.exports.updateUserAvatar = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорректные данные'));
+      }
+      return next();
+    });
 };
 
 module.exports.login = (req, res, next) => {
