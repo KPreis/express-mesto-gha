@@ -33,7 +33,7 @@ module.exports.createUser = (req, res, next) => {
           if (error.name === 'ValidationError') {
             return next(new BadRequestError('Введены некорректные данные'));
           }
-          return next();
+          return next(error);
         });
     });
 };
@@ -69,7 +69,7 @@ module.exports.getUserById = (req, res, next) => {
       if (error.name === 'CastError') {
         return next(new BadRequestError('Введены некорректные данные'));
       }
-      return next();
+      return next(error);
     });
 };
 
@@ -94,7 +94,7 @@ module.exports.updateUserProfile = (req, res, next) => {
       if (error.name === 'ValidationError') {
         return next(new BadRequestError('Введены некорректные данные'));
       }
-      return next();
+      return next(error);
     });
 };
 
@@ -119,7 +119,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (error.name === 'ValidationError') {
         return next(new BadRequestError('Введены некорректные данные'));
       }
-      return next();
+      return next(error);
     });
 };
 

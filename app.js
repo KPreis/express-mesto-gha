@@ -44,8 +44,15 @@ app.use('/', require('./routes/pageNotFound'));
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).send({ message: err.message || 'Server error' });
+app.use((error, req, res, next) => {
+  const { statusCode = 500, message } = error;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
   next();
 });
 

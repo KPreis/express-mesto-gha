@@ -40,14 +40,15 @@ module.exports.deleteCardById = (req, res, next) => {
       if (String(card.owner._id) !== req.user._id) {
         throw new ForbiddenError('Вы не можете удалить чужую карточку');
       } else {
-        Card.findByIdAndRemove(String(req.params.cardId)).then((result) => {
-          res.send({ data: result });
-        })
+        Card.findByIdAndRemove(String(req.params.cardId))
+          .then((result) => {
+            res.send({ data: result });
+          })
           .catch((error) => {
             if (error.name === 'CastError') {
               return next(new BadRequestError('Введены некорректные данные'));
             }
-            return next();
+            return next(error);
           });
       }
     })
@@ -70,7 +71,7 @@ module.exports.likeCard = (req, res, next) => {
       if (error.name === 'CastError') {
         return next(new BadRequestError('Введены некорректные данные'));
       }
-      return next();
+      return next(error);
     });
 };
 
@@ -90,6 +91,6 @@ module.exports.dislikeCard = (req, res, next) => {
       if (error.name === 'CastError') {
         return next(new BadRequestError('Введены некорректные данные'));
       }
-      return next();
+      return next(error);
     });
 };
